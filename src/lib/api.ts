@@ -31,6 +31,19 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
   }
 }
 
+/**
+ * Authenticated fetch wrapper — injects JWT token from Supabase session.
+ * Falls back to unauthenticated fetch on 401 (redirects to /login).
+ */
+export async function authFetchApi<T>(
+  endpoint: string,
+  options?: RequestInit
+): Promise<T> {
+  // Lazy import to avoid circular dependency issues
+  const { authFetch } = await import("@/lib/authFetch")
+  return authFetch<T>(`${API_URL}${endpoint}`, options)
+}
+
 // Types
 export interface Cream {
   id: string;

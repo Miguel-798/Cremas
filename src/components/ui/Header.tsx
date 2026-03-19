@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Menu, 
@@ -9,9 +10,12 @@ import {
   IceCream, 
   Package, 
   ShoppingCart, 
-  Calendar 
+  Calendar,
+  LogOut,
+  User
 } from "lucide-react";
 import { DarkModeToggle } from "./DarkModeToggle";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavItem {
   href: string;
@@ -38,6 +42,8 @@ export function Header({ navItems = defaultNavItems }: HeaderProps) {
   const [isMounted, setIsMounted] = useState(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const firstFocusableRef = useRef<HTMLButtonElement>(null);
+  const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
@@ -99,6 +105,22 @@ export function Header({ navItems = defaultNavItems }: HeaderProps) {
             <div className="flex items-center gap-2">
               {/* Dark mode toggle - always visible */}
               <DarkModeToggle />
+
+              {/* User menu / Logout - visible when logged in */}
+              {isMounted && user && (
+                <button
+                  onClick={async () => {
+                    const { signOut } = await import("@/lib/auth-actions")
+                    await signOut()
+                    router.push("/login")
+                  }}
+                  aria-label="Cerrar sesión"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden sm:inline">Cerrar</span>
+                </button>
+              )}
 
               {/* Hamburger button - only visible on mobile */}
               {isMounted && (
