@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 40 33% 97%;
+  --foreground: 35 35% 15%;
+  --card: 40 30% 98%;
+  --card-foreground: 35 35% 15%;
+  --popover: 40 30% 98%;
+  --popover-foreground: 35 35% 15%;
+  --primary: 25 70% 55%;
+  --primary-foreground: 40 50% 98%;
+  --secondary: 35 40% 90%;
+  --secondary-foreground: 35 35% 20%;
+  --muted: 35 30% 92%;
+  --muted-foreground: 35 20% 45%;
+  --accent: 35 40% 88%;
+  --accent-foreground: 35 35% 15%;
+  --destructive: 15 80% 55%;
+  --destructive-foreground: 40 50% 98%;
+  --border: 35 25% 85%;
+  --input: 35 25% 85%;
+  --ring: 25 70% 55%;
+  --radius: 1rem;
+}
+
+.dark {
+  --background: 30 20% 10%;
+  --foreground: 40 30% 95%;
+  --card: 30 18% 12%;
+  --card-foreground: 40 30% 95%;
+  --popover: 30 18% 12%;
+  --popover-foreground: 40 30% 95%;
+  --primary: 25 75% 60%;
+  --primary-foreground: 30 20% 10%;
+  --secondary: 30 20% 18%;
+  --secondary-foreground: 40 30% 95%;
+  --muted: 30 18% 16%;
+  --muted-foreground: 35 15% 60%;
+  --accent: 30 20% 18%;
+  --accent-foreground: 40 30% 95%;
+  --destructive: 15 75% 50%;
+  --destructive-foreground: 40 50% 98%;
+  --border: 30 15% 22%;
+  --input: 30 15% 22%;
+  --ring: 25 75% 60%;
+}
+
+@layer base {
+  *, *::before, *::after {
+    border-color: hsl(var(--border));
+  }
+  
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .glass-dark {
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .text-gradient {
+    background: linear-gradient(to right, hsl(var(--peach-500)), hsl(var(--cream-600)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .shadow-soft {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+  }
+  
+  .shadow-soft-lg {
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-cream-100 dark:bg-espresso-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-cream-300 dark:bg-espresso-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-cream-400 dark:bg-espresso-600;
+}

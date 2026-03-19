@@ -1,0 +1,242 @@
+"use client";
+
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { creamsApi } from "@/lib/api";
+import { IceCream, Plus, Trash2, ArrowLeft, X, Check } from "lucide-react";
+import { DarkModeToggle } from "@/components/ui/DarkModeToggle";
+
+export default function CremasPage() {
+  const queryClient = useQueryClient();
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({ flavor_name: "", quantity: 0 });
+
+  const { data: creams = [], isLoading } = useQuery({
+    queryKey: ["creams"],
+    queryFn: creamsApi.getAll,
+  });
+
+  const createMutation = useMutation({
+    mutationFn: creamsApi.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["creams"] });
+      setFormData({ flavor_name: "", quantity: 0 });
+      setShowForm(false);
+    },
+  });
+
+  const addStockMutation = useMutation({
+    mutationFn: ({ id, amount }: { id: string; amount: number }) =>
+      creamsApi.addStock(id, { amount }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["creams"] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: creamsApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["creams"] });
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.flavor_name.trim()) return;
+    createMutation.mutate(formData);
+  };
+
+  return (
+    <div className="min-h-screen bg-background transition-colors duration-500">
+      {/* Background */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cream-100 via-transparent to-transparent dark:from-espresso-900/20" />
+      </div>
+
+      {/* Header */}
+      <header className="relative border-b border-border/50 backdrop-blur-sm bg-background/80 sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link href="/">
+                <button className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-xl bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors" aria-label="Volver al inicio">
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+              </Link>
+              <div>
+                <h1 className="text-lg sm:text-xl font-display font-semibold text-foreground">
+                  Cremas
+                </h1>
+                <p className="text-xs text-muted-foreground">Gestión de inventario</p>
+              </div>
+            </div>
+            
+            <DarkModeToggle />
+          </div>
+        </div>
+      </header>
+
+      {/* Main */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        {/* Add Button & Form */}
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <h2 className="text-xl sm:text-2xl font-display font-semibold text-foreground">
+              Tus Sabores
+            </h2>
+            <button
+              onClick={() => setShowForm(!showForm)}
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-peach-500 text-white font-medium hover:bg-peach-600 transition-colors shadow-lg shadow-peach-500/25 w-full sm:w-auto"
+            >
+              <Plus className="w-5 h-5" />
+              Nuevo Sabor
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {showForm && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-5 sm:p-6">
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-muted-foreground mb-2">
+                        Nombre del sabor
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Ej: Chocolate, Vainilla, Oreo..."
+                        value={formData.flavor_name}
+                        onChange={(e) => setFormData({ ...formData, flavor_name: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl bg-background border border-input focus:outline-none focus:ring-2 focus:ring-peach-500 transition-all"
+                        required
+                      />
+                    </div>
+                    <div className="w-full md:w-32">
+                      <label className="block text-sm font-medium text-muted-foreground mb-2">
+                        Cantidad
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={formData.quantity}
+                        onChange={(e) => setFormData({ ...formData, quantity: Number(e.target.value) })}
+                        className="w-full px-4 py-3 rounded-xl bg-background border border-input focus:outline-none focus:ring-2 focus:ring-peach-500 transition-all"
+                      />
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-end gap-2">
+                      <button
+                        type="submit"
+                        disabled={createMutation.isPending}
+                        className="px-6 py-3 rounded-xl bg-peach-500 text-white font-medium hover:bg-peach-600 transition-colors disabled:opacity-50 w-full sm:w-auto"
+                      >
+                        {createMutation.isPending ? "Creando..." : "Crear"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowForm(false)}
+                        className="px-4 py-3 rounded-xl bg-secondary text-secondary-foreground font-medium hover:bg-secondary/80 transition-colors w-full sm:w-auto"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Cremas Grid - Responsive: 1 col mobile, 2 col sm, 3 col md, 4 col lg */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="h-40 rounded-2xl bg-card animate-pulse" />
+            ))}
+          </div>
+        ) : creams.length === 0 ? (
+          <div className="text-center py-16 sm:py-20">
+            <div className="w-20 sm:w-24 h-20 sm:h-24 mx-auto mb-6 rounded-3xl bg-cream-100 dark:bg-espresso-800 flex items-center justify-center">
+              <IceCream className="w-10 sm:w-12 h-10 sm:h-12 text-cream-400 dark:text-cream-600" />
+            </div>
+            <h3 className="font-display text-lg sm:text-xl font-semibold text-foreground mb-2">
+              Sin sabores aún
+            </h3>
+            <p className="text-muted-foreground">
+              Agregá tu primera crema para comenzar
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {creams.map((cream, index) => (
+              <motion.div
+                key={cream.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.05 }}
+                className="group relative bg-card border border-border rounded-2xl p-4 sm:p-5 hover:shadow-soft-lg hover:border-peach-200 dark:hover:border-peach-800 transition-all duration-300"
+              >
+                {/* Delete button */}
+                <button
+                  onClick={() => deleteMutation.mutate(cream.id)}
+                  disabled={deleteMutation.isPending}
+                  className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-200 dark:hover:bg-red-900/50"
+                  aria-label={`Eliminar ${cream.flavor_name}`}
+                >
+                  <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+                </button>
+
+                {/* Content */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-gradient-to-br from-cream-200 to-cream-300 dark:from-espresso-700 dark:to-espresso-800 flex items-center justify-center shrink-0">
+                    <IceCream className="w-5 sm:w-6 h-5 sm:h-6 text-espresso-700 dark:text-cream-300" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-display font-semibold text-foreground truncate">
+                      {cream.flavor_name}
+                    </h3>
+                    <span className={`inline-block px-2 py-0.5 rounded-lg text-xs font-medium ${
+                      cream.is_low_stock 
+                        ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" 
+                        : "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+                    }`}>
+                      {cream.is_low_stock ? "Stock bajo" : "En stock"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Quantity */}
+                <div className="text-center py-3 bg-cream-50 dark:bg-espresso-800/50 rounded-xl">
+                  <p className="text-3xl sm:text-4xl font-display font-bold text-peach-600 dark:text-peach-400">
+                    {cream.quantity}
+                  </p>
+                  <p className="text-xs text-muted-foreground">unidades</p>
+                </div>
+
+                {/* Add Stock */}
+                <button
+                  onClick={() => {
+                    const amount = prompt("¿Cuántas agregar?", "1");
+                    if (amount && Number(amount) > 0) {
+                      addStockMutation.mutate({ id: cream.id, amount: Number(amount) });
+                    }
+                  }}
+                  className="w-full mt-4 py-2 rounded-xl bg-secondary text-secondary-foreground font-medium hover:bg-secondary/80 transition-colors flex items-center justify-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Agregar Stock
+                </button>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
