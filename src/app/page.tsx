@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { creamsApi, alertsApi, reservationsApi } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   AlertTriangle, 
   ShoppingCart, 
@@ -13,30 +15,50 @@ import {
 } from "lucide-react";
 
 export default function HomePage() {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
   const [creams, setCreams] = useState<any[]>([]);
   const [alerts, setAlerts] = useState<any>({ alerts: [], total: 0 });
   const [reservations, setReservations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const [creamsData, alertsData, reservationsData] = await Promise.all([
-          creamsApi.getAll(),
-          alertsApi.getLowStock(),
-          reservationsApi.getActive(),
-        ]);
-        setCreams(creamsData);
-        setAlerts(alertsData);
-        setReservations(reservationsData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
+    if (!isLoading && !user) {
+      router.push("/login");
     }
-    fetchData();
-  }, []);
+  }, [user, isLoading, router]);
+
+  useEffect(() => {
+    if (user) {
+      async function fetchData() {
+        try {
+          const [creamsData, alertsData, reservationsData] = await Promise.all([
+            creamsApi.getAll(),
+            alertsApi.getLowStock(),
+            reservationsApi.getActive(),
+          ]);
+          setCreams(creamsData);
+          setAlerts(alertsData);
+          setReservations(reservationsData);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+      fetchData();
+    }
+  }, [user]);
+
+  // Show loading while checking auth or redirecting
+  if (isLoading || !user) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-peach-200 border-t-peach-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   const totalStock = creams.reduce((acc, c) => acc + c.quantity, 0);
 

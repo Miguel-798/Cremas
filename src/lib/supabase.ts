@@ -10,7 +10,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 /**
- * Supabase browser client.
- * Uses @supabase/ssr for proper cookie handling in Next.js.
+ * Supabase browser client for client-side operations.
+ * Uses @supabase/ssr which handles cookies automatically.
  */
 export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey)

@@ -111,8 +111,9 @@ export interface LowStockResponse {
 
 // API Functions
 export const creamsApi = {
-  getAll: () => fetchApi<CreamWithStatus[]>("/creams"),
-  getById: (id: string) => fetchApi<Cream>(`/creams/${id}`),
+  // GET endpoints require auth on backend
+  getAll: () => authFetchApi<CreamWithStatus[]>("/creams"),
+  getById: (id: string) => authFetchApi<Cream>(`/creams/${id}`),
   create: (data: CreamCreate) =>
     authFetchApi<Cream>("/creams", { method: "POST", body: JSON.stringify(data) }),
   addStock: (id: string, data: CreamAddStock) =>
@@ -122,16 +123,18 @@ export const creamsApi = {
 };
 
 export const salesApi = {
-  getAll: () => fetchApi<Sale[]>("/creamssales"),
+  // GET endpoint requires auth on backend
+  getAll: () => authFetchApi<Sale[]>("/creamssales"),
   create: (id: string, data: SaleCreate) =>
     authFetchApi<Sale>(`/creams/${id}/sell`, { method: "POST", body: JSON.stringify(data) }),
-  getByCream: (id: string) => fetchApi<Sale[]>(`/creams/${id}/sales`),
+  getByCream: (id: string) => authFetchApi<Sale[]>(`/creams/${id}/sales`),
 };
 
 export const reservationsApi = {
   create: (id: string, data: ReservationCreate) =>
     authFetchApi<Reservation>(`/creams/${id}/reserve`, { method: "POST", body: JSON.stringify(data) }),
-  getActive: () => fetchApi<Reservation[]>("/creams/reservations/active"),
+  // GET endpoint requires auth on backend
+  getActive: () => authFetchApi<Reservation[]>("/creams/reservations/active"),
   deliver: (id: string) =>
     authFetchApi<{ message: string }>(`/creams/reservations/${id}/deliver`, { method: "POST" }),
   cancel: (id: string) =>
@@ -139,5 +142,6 @@ export const reservationsApi = {
 };
 
 export const alertsApi = {
-  getLowStock: () => fetchApi<LowStockResponse>("/creams/low-stock"),
+  // GET endpoint requires auth on backend
+  getLowStock: () => authFetchApi<LowStockResponse>("/creams/low-stock"),
 };
