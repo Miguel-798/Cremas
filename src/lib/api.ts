@@ -1,8 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  console.log(`Fetching: ${API_URL}${endpoint}`);
-  
   const response = await fetch(`${API_URL}${endpoint}`, {
     headers: {
       "Content-Type": "application/json",
@@ -10,12 +8,9 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
     },
     ...options,
   });
-
-  console.log(`Response status: ${response.status}`);
   
   if (!response.ok) {
     const errorText = await response.text();
-    console.error(`API Error: ${response.status} - ${errorText}`);
     throw new Error(`Error ${response.status}: ${response.statusText}`);
   }
 

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { creamsApi, alertsApi, reservationsApi } from "@/lib/api";
+import { useCreams, useAlerts, useReservations } from "@/lib/queries";
 import { useAuth } from "@/contexts/AuthContext";
 import { 
   AlertTriangle, 
@@ -15,41 +15,21 @@ import {
 } from "lucide-react";
 
 export default function HomePage() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
-  const [creams, setCreams] = useState<any[]>([]);
-  const [alerts, setAlerts] = useState<any>({ alerts: [], total: 0 });
-  const [reservations, setReservations] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  const { data: creams = [], isLoading: creamsLoading } = useCreams();
+  const { data: alerts = { alerts: [], total: 0 }, isLoading: alertsLoading } = useAlerts();
+  const { data: reservations = [], isLoading: reservationsLoading } = useReservations();
+
+  const isLoading = authLoading || creamsLoading || alertsLoading || reservationsLoading;
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!authLoading && !user) {
       router.push("/login");
     }
-  }, [user, isLoading, router]);
-
-  useEffect(() => {
-    if (user) {
-      async function fetchData() {
-        try {
-          const [creamsData, alertsData, reservationsData] = await Promise.all([
-            creamsApi.getAll(),
-            alertsApi.getLowStock(),
-            reservationsApi.getActive(),
-          ]);
-          setCreams(creamsData);
-          setAlerts(alertsData);
-          setReservations(reservationsData);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        } finally {
-          setLoading(false);
-        }
-      }
-      fetchData();
-    }
-  }, [user]);
+  }, [user, authLoading, router]);
 
   // Show loading while checking auth or redirecting
   if (isLoading || !user) {
@@ -187,7 +167,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {loading ? (
+          {creamsLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="h-32 rounded-2xl bg-secondary animate-pulse" />

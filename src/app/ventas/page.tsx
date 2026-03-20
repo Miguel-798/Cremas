@@ -22,11 +22,13 @@ export default function VentasPage() {
   const { data: creams = [] } = useQuery({
     queryKey: ["creams"],
     queryFn: creamsApi.getAll,
+    staleTime: 60 * 1000,
   });
 
-  const { data: sales = [], isLoading: salesLoading, refetch: refetchSales } = useQuery({
+  const { data: sales = [], isLoading: salesLoading } = useQuery({
     queryKey: ["sales"],
     queryFn: salesApi.getAll,
+    staleTime: 30 * 1000,
   });
 
   const saleMutation = useMutation({
