@@ -1,16 +1,14 @@
 "use client"
 
 import { useState, useEffect, type FormEvent } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { LogIn, Mail, Lock, AlertCircle } from "lucide-react"
-import { signIn } from "@/lib/auth-actions"
+import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/contexts/AuthContext"
 
 export default function LoginPage() {
-  const router = useRouter()
-  const { user, isLoading: authLoading, refreshAuth } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -21,9 +19,9 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (!authLoading && user) {
-      router.push("/")
+      window.location.href = "/"
     }
-  }, [user, authLoading, router])
+  }, [user, authLoading])
 
   function validate() {
     const newErrors: { email?: string; password?: string } = {}
@@ -53,22 +51,20 @@ export default function LoginPage() {
 
     setIsSubmitting(true)
     
-    const formData = new FormData()
-    formData.append("email", email)
-    formData.append("password", password)
-    
-    const result = await signIn(formData)
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
     
     setIsSubmitting(false)
 
-    if (result.error) {
-      setSubmitError(result.error)
+    if (error) {
+      setSubmitError(error.message)
       return
     }
 
-    // Refresh auth state and redirect
-    await refreshAuth()
-    router.push("/")
+    // Full page reload
+    window.location.href = "/"
   }
 
   return (

@@ -18,7 +18,6 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signUp: (email: string, password: string) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
-  refreshAuth: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -74,15 +73,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut()
   }, [])
 
-  const refreshAuth = useCallback(async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    setSession(session)
-    setUser(session?.user ?? null)
-  }, [])
-
   return (
     <AuthContext.Provider
-      value={{ user, session, isLoading, signIn, signUp, signOut, refreshAuth }}
+      value={{ user, session, isLoading, signIn, signUp, signOut }}
     >
       {children}
     </AuthContext.Provider>

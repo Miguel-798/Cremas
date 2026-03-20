@@ -114,28 +114,28 @@ export const creamsApi = {
   getAll: () => fetchApi<CreamWithStatus[]>("/creams"),
   getById: (id: string) => fetchApi<Cream>(`/creams/${id}`),
   create: (data: CreamCreate) =>
-    fetchApi<Cream>("/creams", { method: "POST", body: JSON.stringify(data) }),
+    authFetchApi<Cream>("/creams", { method: "POST", body: JSON.stringify(data) }),
   addStock: (id: string, data: CreamAddStock) =>
-    fetchApi<Cream>(`/creams/${id}/add-stock`, { method: "POST", body: JSON.stringify(data) }),
+    authFetchApi<Cream>(`/creams/${id}/add-stock`, { method: "POST", body: JSON.stringify(data) }),
   delete: (id: string) =>
-    fetchApi<void>(`/creams/${id}`, { method: "DELETE" }),
+    authFetchApi<void>(`/creams/${id}`, { method: "DELETE" }),
 };
 
 export const salesApi = {
   getAll: () => fetchApi<Sale[]>("/creamssales"),
   create: (id: string, data: SaleCreate) =>
-    fetchApi<Sale>(`/creams/${id}/sell`, { method: "POST", body: JSON.stringify(data) }),
+    authFetchApi<Sale>(`/creams/${id}/sell`, { method: "POST", body: JSON.stringify(data) }),
   getByCream: (id: string) => fetchApi<Sale[]>(`/creams/${id}/sales`),
 };
 
 export const reservationsApi = {
   create: (id: string, data: ReservationCreate) =>
-    fetchApi<Reservation>(`/creams/${id}/reserve`, { method: "POST", body: JSON.stringify(data) }),
+    authFetchApi<Reservation>(`/creams/${id}/reserve`, { method: "POST", body: JSON.stringify(data) }),
   getActive: () => fetchApi<Reservation[]>("/creams/reservations/active"),
   deliver: (id: string) =>
-    fetchApi<{ message: string }>(`/creams/reservations/${id}/deliver`, { method: "POST" }),
+    authFetchApi<{ message: string }>(`/creams/reservations/${id}/deliver`, { method: "POST" }),
   cancel: (id: string) =>
-    fetchApi<{ message: string }>(`/creams/reservations/${id}/cancel`, { method: "POST" }),
+    authFetchApi<{ message: string }>(`/creams/reservations/${id}/cancel`, { method: "POST" }),
 };
 
 export const alertsApi = {

@@ -1,16 +1,14 @@
 "use client"
 
 import { useState, useEffect, type FormEvent } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { UserPlus, Mail, Lock, AlertCircle, CheckCircle } from "lucide-react"
-import { signUp as signUpAction } from "@/lib/auth-actions"
+import { supabase } from "@/lib/supabase"
 import { useAuth } from "@/contexts/AuthContext"
 
 export default function SignupPage() {
-  const router = useRouter()
-  const { user, isLoading: authLoading, refreshAuth } = useAuth()
+  const { user, isLoading: authLoading } = useAuth()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -27,9 +25,9 @@ export default function SignupPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (!authLoading && user) {
-      router.push("/")
+      window.location.href = "/"
     }
-  }, [user, authLoading, router])
+  }, [user, authLoading])
 
   function validate() {
     const newErrors: {
@@ -68,19 +66,15 @@ export default function SignupPage() {
 
     setIsSubmitting(true)
     
-    const formData = new FormData()
-    formData.append("email", email)
-    formData.append("password", password)
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    })
     
-    const result = await signUpAction(formData)
     setIsSubmitting(false)
 
-    if (result.error) {
-      if (result.error.includes("already registered") || result.error.includes("already exists")) {
-        setSubmitError("Este correo ya está registrado")
-      } else {
-        setSubmitError(result.error)
-      }
+    if (error) {
+      setSubmitError(error.message)
       return
     }
 
@@ -146,10 +140,7 @@ export default function SignupPage() {
           <form onSubmit={handleSubmit} noValidate className="space-y-5">
             {/* Email */}
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-foreground mb-1.5"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">
                 Correo electrónico
               </label>
               <div className="relative">
@@ -162,19 +153,14 @@ export default function SignupPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl bg-background border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-colors ${
-                    errors.email
-                      ? "border-destructive"
-                      : "border-input hover:border-ring/50"
+                    errors.email ? "border-destructive" : "border-input hover:border-ring/50"
                   }`}
                   aria-invalid={!!errors.email}
                   aria-describedby={errors.email ? "email-error" : undefined}
                 />
               </div>
               {errors.email && (
-                <p
-                  id="email-error"
-                  className="mt-1.5 text-sm text-destructive flex items-center gap-1"
-                >
+                <p id="email-error" className="mt-1.5 text-sm text-destructive flex items-center gap-1">
                   <AlertCircle className="w-3.5 h-3.5" />
                   {errors.email}
                 </p>
@@ -183,10 +169,7 @@ export default function SignupPage() {
 
             {/* Password */}
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-foreground mb-1.5"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1.5">
                 Contraseña
               </label>
               <div className="relative">
@@ -199,19 +182,14 @@ export default function SignupPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl bg-background border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-colors ${
-                    errors.password
-                      ? "border-destructive"
-                      : "border-input hover:border-ring/50"
+                    errors.password ? "border-destructive" : "border-input hover:border-ring/50"
                   }`}
                   aria-invalid={!!errors.password}
                   aria-describedby={errors.password ? "password-error" : undefined}
                 />
               </div>
               {errors.password && (
-                <p
-                  id="password-error"
-                  className="mt-1.5 text-sm text-destructive flex items-center gap-1"
-                >
+                <p id="password-error" className="mt-1.5 text-sm text-destructive flex items-center gap-1">
                   <AlertCircle className="w-3.5 h-3.5" />
                   {errors.password}
                 </p>
@@ -220,10 +198,7 @@ export default function SignupPage() {
 
             {/* Confirm Password */}
             <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-medium text-foreground mb-1.5"
-              >
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-1.5">
                 Confirmar contraseña
               </label>
               <div className="relative">
@@ -236,21 +211,14 @@ export default function SignupPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className={`w-full pl-10 pr-4 py-3 rounded-xl bg-background border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 transition-colors ${
-                    errors.confirmPassword
-                      ? "border-destructive"
-                      : "border-input hover:border-ring/50"
+                    errors.confirmPassword ? "border-destructive" : "border-input hover:border-ring/50"
                   }`}
                   aria-invalid={!!errors.confirmPassword}
-                  aria-describedby={
-                    errors.confirmPassword ? "confirm-error" : undefined
-                  }
+                  aria-describedby={errors.confirmPassword ? "confirm-error" : undefined}
                 />
               </div>
               {errors.confirmPassword && (
-                <p
-                  id="confirm-error"
-                  className="mt-1.5 text-sm text-destructive flex items-center gap-1"
-                >
+                <p id="confirm-error" className="mt-1.5 text-sm text-destructive flex items-center gap-1">
                   <AlertCircle className="w-3.5 h-3.5" />
                   {errors.confirmPassword}
                 </p>
@@ -288,10 +256,7 @@ export default function SignupPage() {
           {/* Footer */}
           <p className="mt-6 text-center text-sm text-muted-foreground">
             ¿Ya tienes cuenta?{" "}
-            <Link
-              href="/login"
-              className="font-medium text-primary hover:text-primary/80 transition-colors"
-            >
+            <Link href="/login" className="font-medium text-primary hover:text-primary/80 transition-colors">
               Inicia sesión aquí
             </Link>
           </p>

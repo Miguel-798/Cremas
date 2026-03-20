@@ -1,14 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { creamsApi, reservationsApi } from "@/lib/api";
 import { Calendar, ArrowLeft, IceCream, Check, X, User } from "lucide-react";
 import { DarkModeToggle } from "@/components/ui/DarkModeToggle";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function ReservasPage() {
+  const { user, isLoading: authLoading } = useAuth();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
@@ -62,6 +66,22 @@ export default function ReservasPage() {
   };
 
   const availableCreams = creams.filter((c) => c.quantity > 0);
+
+  // Redirect if not logged in (after all hooks)
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, authLoading, router]);
+
+  // Show loading while checking auth
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-peach-200 border-t-peach-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);

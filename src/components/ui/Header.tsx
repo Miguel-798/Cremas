@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 interface NavItem {
   href: string;
@@ -109,10 +110,14 @@ export function Header({ navItems = defaultNavItems }: HeaderProps) {
               {/* User menu / Logout - visible when logged in */}
               {isMounted && user && (
                 <button
-                  onClick={async () => {
-                    const { signOut } = await import("@/lib/auth-actions")
-                    await signOut()
-                    router.push("/login")
+                  onClick={() => {
+                    supabase.auth.signOut().then(() => {
+                      // Clear auth token
+                      if (typeof window !== 'undefined') {
+                        localStorage.removeItem('auth_token')
+                      }
+                      window.location.href = "/login"
+                    })
                   }}
                   aria-label="Cerrar sesión"
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all"
