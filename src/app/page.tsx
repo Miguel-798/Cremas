@@ -75,13 +75,18 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-500">
-      {/* Background Pattern */}
+    <div className="min-h-screen bg-background">
+      {/* Background Pattern 
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cream-100 via-transparent to-transparent dark:from-espresso-900/20" />
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-peach-200/30 rounded-full blur-3xl dark:bg-peach-900/20" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cream-200/30 rounded-full blur-3xl dark:bg-cream-900/20" />
-      </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-900 via-blue-500 to-transparent" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-yellow-900 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-green-900 rounded-full blur-3xl" />
+      </div>*/}
+          <div className="fixed inset-0 -z-10 overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cream-100 via-transparent to-transparent dark:from-espresso-900/20"></div>
+              <div className="absolute top-0 left-1/4 w-96 h-96 bg-peach-200/30 rounded-full blur-3xl dark:bg-peach-900/20"></div>
+              <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cream-200/30 rounded-full blur-3xl dark:bg-cream-900/20"></div>
+          </div>
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
@@ -117,24 +122,24 @@ export default function HomePage() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="mb-8"
             >
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/30 dark:to-orange-950/30 border border-red-200/50 dark:border-red-800/50 p-5 sm:p-6">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-red-100/50 dark:bg-red-900/20 rounded-full blur-2xl" />
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-50 to-orange-50 border border-red-200/50 p-5 sm:p-6">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-red-100/50 rounded-full blur-2xl" />
                 <div className="relative flex items-start gap-4">
-                  <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-red-100 dark:bg-red-900/50 flex items-center justify-center shrink-0">
-                    <AlertTriangle className="w-5 sm:w-6 h-5 sm:h-6 text-red-600 dark:text-red-400" />
+                  <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+                    <AlertTriangle className="w-5 sm:w-6 h-5 sm:h-6 text-red-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-display font-semibold text-red-800 dark:text-red-300 text-lg">
+                    <h3 className="font-display font-semibold text-red-800 text-lg">
                       Alertas de Stock
                     </h3>
-                    <p className="text-red-600/80 dark:text-red-400/80 text-sm mb-3">
+                    <p className="text-red-600/80 text-sm mb-3">
                       Las siguientes cremas necesitan reposición
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {alerts.alerts.map((alert: any) => (
                         <span
                           key={alert.cream_id}
-                          className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white dark:bg-red-900/50 text-red-700 dark:text-red-300 text-sm font-medium"
+                          className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white text-red-700 text-sm font-medium"
                         >
                           <IceCream className="w-3 h-3" />
                           {alert.flavor_name}
@@ -161,7 +166,7 @@ export default function HomePage() {
               Inventario Reciente
             </h2>
             <Link href="/cremas">
-              <button className="flex items-center gap-1 text-sm text-peach-600 dark:text-peach-400 hover:text-peach-700 dark:hover:text-peach-300 transition-colors">
+              <button className="flex items-center gap-1 text-sm text-peach-600 hover:text-peach-700 transition-colors">
                 Ver todas <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
@@ -175,8 +180,8 @@ export default function HomePage() {
             </div>
           ) : creams.length === 0 ? (
             <div className="relative overflow-hidden rounded-2xl bg-card border border-border p-8 sm:p-12 text-center">
-              <div className="w-16 sm:w-20 h-16 sm:h-20 mx-auto mb-4 rounded-2xl bg-cream-100 dark:bg-espresso-800 flex items-center justify-center">
-                <IceCream className="w-8 sm:w-10 h-8 sm:h-10 text-cream-400 dark:text-cream-600" />
+              <div className="w-16 sm:w-20 h-16 sm:h-20 mx-auto mb-4 rounded-2xl bg-cream-100 flex items-center justify-center">
+                <IceCream className="w-8 sm:w-10 h-8 sm:h-10 text-cream-600" />
               </div>
               <h3 className="font-display text-lg sm:text-xl font-semibold text-foreground mb-2">
                 No hay cremas todavía
@@ -199,16 +204,16 @@ export default function HomePage() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.5 + index * 0.1 }}
-                  className="group relative overflow-hidden rounded-2xl bg-card border border-border p-4 sm:p-5 hover:shadow-soft-lg hover:border-peach-200 dark:hover:border-peach-800 transition-all duration-300"
+                  className="group relative overflow-hidden rounded-2xl bg-card border border-border p-4 sm:p-5 hover:shadow-soft-lg hover:border-peach-200 transition-all duration-300"
                 >
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-peach-400 to-cream-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                   
                   <div className="flex items-start justify-between mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-cream-100 dark:bg-espresso-800 flex items-center justify-center">
-                      <IceCream className="w-5 h-5 text-cream-600 dark:text-cream-400" />
+                    <div className="w-10 h-10 rounded-xl bg-cream-100 flex items-center justify-center">
+                      <IceCream className="w-5 h-5 text-cream-600" />
                     </div>
                     {cream.is_low_stock && (
-                      <span className="px-2 py-1 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium">
+                      <span className="px-2 py-1 rounded-lg bg-red-100 text-red-600 text-xs font-medium">
                         Bajo
                       </span>
                     )}
@@ -217,7 +222,7 @@ export default function HomePage() {
                   <h3 className="font-display font-semibold text-foreground truncate">
                     {cream.flavor_name}
                   </h3>
-                  <p className="text-3xl font-display font-bold text-peach-600 dark:text-peach-400 mt-2">
+                  <p className="text-3xl font-display font-bold text-peach-600 mt-2">
                     {cream.quantity}
                   </p>
                   <p className="text-xs text-muted-foreground">unidades</p>

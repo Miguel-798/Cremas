@@ -8,26 +8,13 @@ export const metadata: Metadata = {
   description: "Gestión de inventario de cremas artesanales",
 };
 
-// Dark mode init script - prevents flash of wrong theme on first paint
-const darkModeInitScript = `
-  (function() {
-    const saved = localStorage.getItem('darkMode');
-    if (saved === 'true' || (saved === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark');
-    }
-  })();
-`;
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: darkModeInitScript }} />
-      </head>
+    <html lang="es">
       <body className="min-h-screen">
         <Providers>
           <Header />

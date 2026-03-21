@@ -94,10 +94,15 @@ export default function ReservasPage() {
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-500">
-      {/* Background */}
+      {/* Background 
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-matcha-100 via-transparent to-transparent dark:from-matcha-900/20" />
-      </div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-matcha-100 via-transparent to-transparent /20" />
+      </div>*/}
+          <div className="fixed inset-0 -z-10 overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cream-100 via-transparent to-transparent dark:from-espresso-900/20"></div>
+              <div className="absolute top-0 left-1/4 w-96 h-96 bg-peach-200/30 rounded-full blur-3xl dark:bg-peach-900/20"></div>
+              <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cream-200/30 rounded-full blur-3xl dark:bg-cream-900/20"></div>
+          </div>
 
       {/* Header */}
       <header className="relative border-b border-border/50 backdrop-blur-sm bg-background/80 sticky top-0 z-40">
@@ -117,7 +122,7 @@ export default function ReservasPage() {
               </div>
             </div>
             
-            <DarkModeToggle />
+            
           </div>
         </div>
       </header>
@@ -236,7 +241,7 @@ export default function ReservasPage() {
           </div>
         ) : reservations.length === 0 ? (
           <div className="text-center py-16 sm:py-20 bg-card border border-border rounded-2xl">
-            <div className="w-16 sm:w-20 h-16 sm:h-20 mx-auto mb-4 rounded-2xl bg-matcha-100 dark:bg-matcha-900/30 flex items-center justify-center">
+            <div className="w-16 sm:w-20 h-16 sm:h-20 mx-auto mb-4 rounded-2xl bg-matcha-100 /30 flex items-center justify-center">
               <Calendar className="w-8 sm:w-10 h-8 sm:h-10 text-matcha-500" />
             </div>
             <h3 className="font-display text-lg sm:text-xl font-semibold text-foreground mb-2">
@@ -282,7 +287,7 @@ export default function ReservasPage() {
                   
                   <div className="flex items-center gap-4 ml-14 sm:ml-0">
                     <div className="text-right shrink-0">
-                      <p className="text-xl sm:text-2xl font-display font-bold text-matcha-600 dark:text-matcha-400">
+                      <p className="text-xl sm:text-2xl font-display font-bold text-matcha-600 ">
                         {reservation.quantity_reserved}
                       </p>
                       <p className="text-xs text-muted-foreground hidden sm:block">unidades</p>
@@ -291,18 +296,18 @@ export default function ReservasPage() {
                       <button
                         onClick={() => deliverMutation.mutate(reservation.id)}
                         disabled={deliverMutation.isPending}
-                        className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
+                        className="w-10 h-10 rounded-xl bg-green-100 /30 flex items-center justify-center hover:bg-green-200 :bg-green-900/50 transition-colors"
                         aria-label="Marcar como entregada"
                       >
-                        <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+                        <Check className="w-5 h-5 text-green-600 " />
                       </button>
                       <button
                         onClick={() => cancelMutation.mutate(reservation.id)}
                         disabled={cancelMutation.isPending}
-                        className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                        className="w-10 h-10 rounded-xl bg-red-100 /30 flex items-center justify-center hover:bg-red-200 :bg-red-900/50 transition-colors"
                         aria-label="Cancelar reserva"
                       >
-                        <X className="w-5 h-5 text-red-600 dark:text-red-400" />
+                        <X className="w-5 h-5 text-red-600 " />
                       </button>
                     </div>
                   </div>

@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\app",
+    "\\src\\app\\cremas",
+    "\\src\\app\\reservas",
+    "\\src\\app\\signup",
+    "\\src\\app\\ventas",
+    "\\src\\components",
+    "\\src\\components\\ui",
+    "\\src\\lib"
+  ],
+  "SelectedNode": "\\src\\components\\ui\\Header.tsx",
+  "PreviewInSolutionExplorer": false
+}

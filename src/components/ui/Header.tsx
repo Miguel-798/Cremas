@@ -14,7 +14,6 @@ import {
   LogOut,
   User
 } from "lucide-react";
-import { DarkModeToggle } from "./DarkModeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 
@@ -104,9 +103,6 @@ export function Header({ navItems = defaultNavItems }: HeaderProps) {
 
             {/* Right side actions */}
             <div className="flex items-center gap-2">
-              {/* Dark mode toggle - always visible */}
-              <DarkModeToggle />
-
               {/* User menu / Logout - visible when logged in */}
               {isMounted && user && (
                 <button
@@ -194,7 +190,7 @@ export function Header({ navItems = defaultNavItems }: HeaderProps) {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed top-0 left-0 h-full w-72 bg-cream-50 dark:bg-espresso-900 border-r border-border z-50 md:hidden"
+              className="fixed top-0 left-0 h-full w-72 bg-cream-50 border-r border-border z-50 md:hidden"
               role="dialog"
               aria-modal="true"
               aria-label="Navegación"

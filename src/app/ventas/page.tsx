@@ -110,10 +110,15 @@ export default function VentasPage() {
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-500">
-      {/* Background */}
+      {/* Background 
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-peach-100 via-transparent to-transparent dark:from-peach-900/20" />
-      </div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-peach-100 via-transparent to-transparent /20" />
+      </div>*/}
+          <div className="fixed inset-0 -z-10 overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cream-100 via-transparent to-transparent dark:from-espresso-900/20"></div>
+              <div className="absolute top-0 left-1/4 w-96 h-96 bg-peach-200/30 rounded-full blur-3xl dark:bg-peach-900/20"></div>
+              <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cream-200/30 rounded-full blur-3xl dark:bg-cream-900/20"></div>
+          </div>
 
       {/* Header */}
       <header className="relative border-b border-border/50 backdrop-blur-sm bg-background/80 sticky top-0 z-40">
@@ -133,7 +138,7 @@ export default function VentasPage() {
               </div>
             </div>
             
-            <DarkModeToggle />
+            
           </div>
         </div>
       </header>
@@ -259,12 +264,12 @@ export default function VentasPage() {
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="p-4 bg-cream-50 dark:bg-espresso-800/50 rounded-xl"
+                      className="p-4 bg-cream-50 /50 rounded-xl"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-cream-200 dark:bg-espresso-700 flex items-center justify-center shrink-0">
-                            <IceCream className="w-5 h-5 text-espresso-700 dark:text-cream-300" />
+                          <div className="w-10 h-10 rounded-xl bg-cream-200  flex items-center justify-center shrink-0">
+                            <IceCream className="w-5 h-5 text-espresso-700 " />
                           </div>
                           <div className="min-w-0">
                             <p className="font-medium text-foreground truncate">{selected.flavor_name}</p>
@@ -274,7 +279,7 @@ export default function VentasPage() {
                           </div>
                         </div>
                         <div className="text-right shrink-0 ml-4">
-                          <p className="text-xl sm:text-2xl font-display font-bold text-peach-600 dark:text-peach-400">
+                          <p className="text-xl sm:text-2xl font-display font-bold text-peach-600 ">
                             {quantity}
                           </p>
                           <p className="text-xs text-muted-foreground">vender</p>
@@ -315,14 +320,14 @@ export default function VentasPage() {
                     {availableCreams.map((cream) => (
                       <div
                         key={cream.id}
-                        className={`bg-card border border-border rounded-xl p-3 sm:p-4 text-center cursor-pointer transition-all hover:border-peach-300 dark:hover:border-peach-700 ${
+                        className={`bg-card border border-border rounded-xl p-3 sm:p-4 text-center cursor-pointer transition-all hover:border-peach-300 :border-peach-700 ${
                           selectedCream === cream.id ? "border-peach-500 ring-2 ring-peach-500/20" : ""
                         }`}
                         onClick={() => setSelectedCream(cream.id)}
                       >
                         <IceCream className="w-5 sm:w-6 h-5 sm:h-6 mx-auto mb-2 text-cream-500" />
                         <p className="font-medium text-foreground text-sm truncate">{cream.flavor_name}</p>
-                        <p className="text-xl sm:text-2xl font-display font-bold text-peach-600 dark:text-peach-400">{cream.quantity}</p>
+                        <p className="text-xl sm:text-2xl font-display font-bold text-peach-600 ">{cream.quantity}</p>
                       </div>
                     ))}
                   </div>
@@ -372,8 +377,8 @@ export default function VentasPage() {
                 </div>
               ) : sales.length === 0 ? (
                 <div className="text-center py-12 sm:py-16 bg-card border border-border rounded-2xl">
-                  <div className="w-16 sm:w-20 h-16 sm:h-20 mx-auto mb-4 rounded-2xl bg-cream-100 dark:bg-espresso-800 flex items-center justify-center">
-                    <ShoppingCart className="w-8 sm:w-10 h-8 sm:h-10 text-cream-400 dark:text-cream-600" />
+                  <div className="w-16 sm:w-20 h-16 sm:h-20 mx-auto mb-4 rounded-2xl bg-cream-100  flex items-center justify-center">
+                    <ShoppingCart className="w-8 sm:w-10 h-8 sm:h-10 text-cream-400 " />
                   </div>
                   <h3 className="font-display text-lg sm:text-xl font-semibold text-foreground mb-2">
                     Sin ventas registradas
@@ -410,8 +415,8 @@ export default function VentasPage() {
                                 className="bg-card border border-border rounded-xl p-3 sm:p-4 flex items-center justify-between gap-4"
                               >
                                 <div className="flex items-center gap-3 min-w-0">
-                                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cream-200 to-cream-300 dark:from-espresso-700 dark:to-espresso-800 flex items-center justify-center shrink-0">
-                                    <IceCream className="w-5 h-5 text-espresso-700 dark:text-cream-300" />
+                                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cream-200 to-cream-300   flex items-center justify-center shrink-0">
+                                    <IceCream className="w-5 h-5 text-espresso-700 " />
                                   </div>
                                   <div className="min-w-0">
                                     <p className="font-medium text-foreground truncate">{sale.cream_name}</p>
@@ -424,7 +429,7 @@ export default function VentasPage() {
                                   </div>
                                 </div>
                                 <div className="text-right shrink-0">
-                                  <p className="text-lg sm:text-xl font-display font-bold text-peach-600 dark:text-peach-400">
+                                  <p className="text-lg sm:text-xl font-display font-bold text-peach-600 ">
                                     {sale.quantity_sold}
                                   </p>
                                   <p className="text-xs text-muted-foreground hidden sm:block">unidades</p>

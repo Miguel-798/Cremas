@@ -90,8 +90,8 @@ export default function SignupPage() {
           className="w-full max-w-md"
         >
           <div className="bg-card rounded-2xl shadow-soft-lg border border-border/50 p-8 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-matcha-100 dark:bg-matcha-900 mb-4">
-              <CheckCircle className="w-8 h-8 text-matcha-600 dark:text-matcha-400" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-matcha-100  mb-4">
+              <CheckCircle className="w-8 h-8 text-matcha-600 " />
             </div>
             <h1 className="text-2xl font-display font-bold text-foreground mb-2">
               ¡Registro exitoso!

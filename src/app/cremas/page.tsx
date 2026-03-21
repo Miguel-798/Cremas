@@ -70,10 +70,15 @@ export default function CremasPage() {
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-500">
-      {/* Background */}
+      {/* Background 
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cream-100 via-transparent to-transparent dark:from-espresso-900/20" />
-      </div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cream-100 via-transparent to-transparent /20" />
+      </div>*/}
+          <div className="fixed inset-0 -z-10 overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cream-100 via-transparent to-transparent dark:from-espresso-900/20"></div>
+              <div className="absolute top-0 left-1/4 w-96 h-96 bg-peach-200/30 rounded-full blur-3xl dark:bg-peach-900/20"></div>
+              <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cream-200/30 rounded-full blur-3xl dark:bg-cream-900/20"></div>
+          </div>
 
       {/* Header */}
       <header className="relative border-b border-border/50 backdrop-blur-sm bg-background/80 sticky top-0 z-40">
@@ -93,7 +98,7 @@ export default function CremasPage() {
               </div>
             </div>
             
-            <DarkModeToggle />
+            
           </div>
         </div>
       </header>
@@ -182,8 +187,8 @@ export default function CremasPage() {
           </div>
         ) : creams.length === 0 ? (
           <div className="text-center py-16 sm:py-20">
-            <div className="w-20 sm:w-24 h-20 sm:h-24 mx-auto mb-6 rounded-3xl bg-cream-100 dark:bg-espresso-800 flex items-center justify-center">
-              <IceCream className="w-10 sm:w-12 h-10 sm:h-12 text-cream-400 dark:text-cream-600" />
+            <div className="w-20 sm:w-24 h-20 sm:h-24 mx-auto mb-6 rounded-3xl bg-cream-100  flex items-center justify-center">
+              <IceCream className="w-10 sm:w-12 h-10 sm:h-12 text-cream-400 " />
             </div>
             <h3 className="font-display text-lg sm:text-xl font-semibold text-foreground mb-2">
               Sin sabores aún
@@ -200,22 +205,22 @@ export default function CremasPage() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.05 }}
-                className="group relative bg-card border border-border rounded-2xl p-4 sm:p-5 hover:shadow-soft-lg hover:border-peach-200 dark:hover:border-peach-800 transition-all duration-300"
+                className="group relative bg-card border border-border rounded-2xl p-4 sm:p-5 hover:shadow-soft-lg hover:border-peach-200 :border-peach-800 transition-all duration-300"
               >
                 {/* Delete button */}
                 <button
                   onClick={() => deleteMutation.mutate(cream.id)}
                   disabled={deleteMutation.isPending}
-                  className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-200 dark:hover:bg-red-900/50"
+                  className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-red-100 /30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-200 :bg-red-900/50"
                   aria-label={`Eliminar ${cream.flavor_name}`}
                 >
-                  <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+                  <Trash2 className="w-4 h-4 text-red-600 " />
                 </button>
 
                 {/* Content */}
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-gradient-to-br from-cream-200 to-cream-300 dark:from-espresso-700 dark:to-espresso-800 flex items-center justify-center shrink-0">
-                    <IceCream className="w-5 sm:w-6 h-5 sm:h-6 text-espresso-700 dark:text-cream-300" />
+                  <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-gradient-to-br from-cream-200 to-cream-300   flex items-center justify-center shrink-0">
+                    <IceCream className="w-5 sm:w-6 h-5 sm:h-6 text-espresso-700 " />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-display font-semibold text-foreground truncate">
@@ -223,8 +228,8 @@ export default function CremasPage() {
                     </h3>
                     <span className={`inline-block px-2 py-0.5 rounded-lg text-xs font-medium ${
                       cream.is_low_stock 
-                        ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" 
-                        : "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+                        ? "bg-red-100 text-red-600 /30 " 
+                        : "bg-green-100 text-green-600 /30 "
                     }`}>
                       {cream.is_low_stock ? "Stock bajo" : "En stock"}
                     </span>
@@ -232,8 +237,8 @@ export default function CremasPage() {
                 </div>
 
                 {/* Quantity */}
-                <div className="text-center py-3 bg-cream-50 dark:bg-espresso-800/50 rounded-xl">
-                  <p className="text-3xl sm:text-4xl font-display font-bold text-peach-600 dark:text-peach-400">
+                <div className="text-center py-3 bg-cream-50 /50 rounded-xl">
+                  <p className="text-3xl sm:text-4xl font-display font-bold text-peach-600 ">
                     {cream.quantity}
                   </p>
                   <p className="text-xs text-muted-foreground">unidades</p>
