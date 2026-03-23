@@ -44,6 +44,7 @@ export interface Cream {
   id: string;
   flavor_name: string;
   quantity: number;
+  price: number;
   created_at: string;
   updated_at: string;
 }
@@ -55,6 +56,7 @@ export interface CreamWithStatus extends Cream {
 export interface CreamCreate {
   flavor_name: string;
   quantity: number;
+  price?: number;
 }
 
 export interface CreamAddStock {
@@ -66,6 +68,8 @@ export interface Sale {
   cream_id: string;
   cream_name: string;
   quantity_sold: number;
+  price?: number;
+  total?: number;
   sold_at: string;
 }
 

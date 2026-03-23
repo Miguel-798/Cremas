@@ -16,6 +16,7 @@ export default function VentasPage() {
   const queryClient = useQueryClient();
   const [selectedCream, setSelectedCream] = useState("");
   const [quantity, setQuantity] = useState(1);
+  const [manualPrice, setManualPrice] = useState<number>(0);
   const [showRegister, setShowRegister] = useState(true);
   const [view, setView] = useState<"register" | "history">("register");
 
@@ -38,6 +39,7 @@ export default function VentasPage() {
       queryClient.invalidateQueries({ queryKey: ["sales"] });
       setSelectedCream("");
       setQuantity(1);
+      setManualPrice(0);
       alert("¡Venta registrada! 🎉");
     },
     onError: (error: any) => {
@@ -65,6 +67,10 @@ export default function VentasPage() {
 
   const availableCreams = creams.filter((c) => c.quantity > 0);
   const selected = creams.find((c) => c.id === selectedCream);
+  
+  // Calculate total price - use manual price if set, otherwise use cream's price
+  const effectivePrice = manualPrice > 0 ? manualPrice : (selected?.price ?? 0);
+  const calculatedTotal = effectivePrice * quantity;
 
   // Redirect if not logged in (after all hooks)
   useEffect(() => {
@@ -88,6 +94,10 @@ export default function VentasPage() {
     const hoy = new Date().toDateString();
     return new Date(s.sold_at).toDateString() === hoy;
   });
+  
+  // Daily revenue calculation (handle legacy sales gracefully)
+  const ingresosHoy = ventasHoy.reduce((acc, s) => acc + (s.total ?? 0), 0);
+  const ingresosTotales = sales.reduce((acc, s) => acc + (s.total ?? 0), 0);
 
   // Group sales by date
   const salesByDate = sales.reduce((acc, sale) => {
@@ -207,6 +217,7 @@ export default function VentasPage() {
                   <p className="text-3xl sm:text-4xl font-display font-bold">
                     {ventasHoy.reduce((acc, s) => acc + s.quantity_sold, 0)}
                   </p>
+                  <p className="text-sm opacity-80">unidades / ${ingresosHoy.toLocaleString('es-CO')}</p>
                 </div>
               </div>
 
@@ -240,7 +251,7 @@ export default function VentasPage() {
                       <option value="">Seleccionar...</option>
                       {availableCreams.map((cream) => (
                         <option key={cream.id} value={cream.id}>
-                          {cream.flavor_name} ({cream.quantity} disponibles)
+                          {cream.flavor_name} - ${cream.price?.toLocaleString('es-CO') || '0'} ({cream.quantity} disponibles)
                         </option>
                       ))}
                     </select>
@@ -259,6 +270,22 @@ export default function VentasPage() {
                       required
                     />
                   </div>
+
+                  {selected && (
+                    <div>
+                      <label className="block text-sm font-medium text-muted-foreground mb-2">
+                        Precio unitario (COP)
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={manualPrice > 0 ? manualPrice : selected.price || 0}
+                        onChange={(e) => setManualPrice(Number(e.target.value))}
+                        placeholder={selected.price ? selected.price.toString() : "0"}
+                        className="w-full px-4 py-3 rounded-xl bg-background border border-input focus:outline-none focus:ring-2 focus:ring-peach-500 transition-all"
+                      />
+                    </div>
+                  )}
 
                   {selected && (
                     <motion.div
@@ -285,6 +312,21 @@ export default function VentasPage() {
                           <p className="text-xs text-muted-foreground">vender</p>
                         </div>
                       </div>
+                      {/* Price and Total Display */}
+                      {(effectivePrice > 0 || manualPrice > 0) && (
+                        <div className="mt-3 pt-3 border-t border-border/50 flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-muted-foreground">Precio:</span>
+                            <span className="font-medium text-foreground">${effectivePrice.toLocaleString('es-CO')}</span>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-muted-foreground">Total:</p>
+                            <p className="text-lg sm:text-xl font-display font-bold text-matcha-600">
+                              ${calculatedTotal.toLocaleString('es-CO')}
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </motion.div>
                   )}
 
@@ -360,7 +402,7 @@ export default function VentasPage() {
                   <p className="text-3xl sm:text-4xl font-display font-bold">
                     {ventasHoy.reduce((acc, s) => acc + s.quantity_sold, 0)}
                   </p>
-                  <p className="text-sm opacity-80">unidades</p>
+                  <p className="text-sm opacity-80">unidades / ${ingresosHoy.toLocaleString('es-CO')}</p>
                 </div>
               </div>
 
@@ -368,6 +410,24 @@ export default function VentasPage() {
               <h2 className="font-display font-semibold text-foreground mb-4">
                 Historial de Ventas
               </h2>
+
+              {/* Daily Revenue Summary */}
+              <div className="mb-6 p-4 bg-gradient-to-r from-peach-100 to-matcha-100 dark:from-peach-900/20 dark:to-matcha-900/20 rounded-xl border border-border">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Ingresos del día</p>
+                    <p className="text-2xl sm:text-3xl font-display font-bold text-peach-600 dark:text-peach-400">
+                      ${ingresosHoy.toLocaleString('es-CO')}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">Ventas hoy</p>
+                    <p className="text-lg font-medium text-foreground">
+                      {ventasHoy.length} {ventasHoy.length === 1 ? 'venta' : 'ventas'}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
               {salesLoading ? (
                 <div className="space-y-3">
@@ -424,15 +484,15 @@ export default function VentasPage() {
                                       {new Date(sale.sold_at).toLocaleTimeString("es-ES", {
                                         hour: "2-digit",
                                         minute: "2-digit",
-                                      })}
+                                      })} · ${(sale.price ?? 0).toLocaleString('es-CO')} x {sale.quantity_sold}
                                     </p>
                                   </div>
                                 </div>
                                 <div className="text-right shrink-0">
                                   <p className="text-lg sm:text-xl font-display font-bold text-peach-600 ">
-                                    {sale.quantity_sold}
+                                    ${(sale.total ?? 0).toLocaleString('es-CO')}
                                   </p>
-                                  <p className="text-xs text-muted-foreground hidden sm:block">unidades</p>
+                                  <p className="text-xs text-muted-foreground hidden sm:block">total</p>
                                 </div>
                               </div>
                             ))}

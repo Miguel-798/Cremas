@@ -16,6 +16,7 @@ export default function CremasPage() {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ flavor_name: "", quantity: 0 });
+  const [price, setPrice] = useState<number>(5000);
 
   const { data: creams = [], isLoading } = useQuery({
     queryKey: ["creams"],
@@ -23,10 +24,12 @@ export default function CremasPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: creamsApi.create,
+    mutationFn: (data: { flavor_name: string; quantity: number; price?: number }) =>
+      creamsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["creams"] });
       setFormData({ flavor_name: "", quantity: 0 });
+      setPrice(5000);
       setShowForm(false);
     },
   });
@@ -65,7 +68,7 @@ export default function CremasPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.flavor_name.trim()) return;
-    createMutation.mutate(formData);
+    createMutation.mutate({ ...formData, price });
   };
 
   return (
@@ -152,6 +155,19 @@ export default function CremasPage() {
                         min="0"
                         value={formData.quantity}
                         onChange={(e) => setFormData({ ...formData, quantity: Number(e.target.value) })}
+                        className="w-full px-4 py-3 rounded-xl bg-background border border-input focus:outline-none focus:ring-2 focus:ring-peach-500 transition-all"
+                      />
+                    </div>
+                    <div className="w-full md:w-40">
+                      <label className="block text-sm font-medium text-muted-foreground mb-2">
+                        Precio (COP)
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={price}
+                        onChange={(e) => setPrice(Number(e.target.value))}
+                        placeholder="5000"
                         className="w-full px-4 py-3 rounded-xl bg-background border border-input focus:outline-none focus:ring-2 focus:ring-peach-500 transition-all"
                       />
                     </div>
