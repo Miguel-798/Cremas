@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { creamsApi } from "@/lib/api";
-import { IceCream, Plus, Trash2, ArrowLeft, X, Check } from "lucide-react";
+import { creamsApi, CreamUpdate } from "@/lib/api";
+import { IceCream, Plus, Trash2, ArrowLeft, X, Check, Pencil } from "lucide-react";
 import { DarkModeToggle } from "@/components/ui/DarkModeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -17,6 +17,10 @@ export default function CremasPage() {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ flavor_name: "", quantity: 0 });
   const [price, setPrice] = useState<number>(5000);
+  
+  // Edit modal state
+  const [editingCream, setEditingCream] = useState<{id: string; flavor_name: string; quantity: number; price: number} | null>(null);
+  const [editFormData, setEditFormData] = useState({ flavor_name: "", quantity: 0, price: 0 });
 
   const { data: creams = [], isLoading } = useQuery({
     queryKey: ["creams"],
@@ -46,6 +50,15 @@ export default function CremasPage() {
     mutationFn: creamsApi.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["creams"] });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: CreamUpdate }) =>
+      creamsApi.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["creams"] });
+      setEditingCream(null);
     },
   });
 
@@ -233,6 +246,27 @@ export default function CremasPage() {
                   <Trash2 className="w-4 h-4 text-red-600 " />
                 </button>
 
+                {/* Edit button */}
+                <button
+                  onClick={() => {
+                    setEditingCream({
+                      id: cream.id,
+                      flavor_name: cream.flavor_name,
+                      quantity: cream.quantity,
+                      price: cream.price,
+                    });
+                    setEditFormData({
+                      flavor_name: cream.flavor_name,
+                      quantity: cream.quantity,
+                      price: cream.price,
+                    });
+                  }}
+                  className="absolute top-3 right-12 w-8 h-8 rounded-lg bg-blue-100 /30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-blue-200 :bg-blue-900/50"
+                  aria-label={`Editar ${cream.flavor_name}`}
+                >
+                  <Pencil className="w-4 h-4 text-blue-600 " />
+                </button>
+
                 {/* Content */}
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-xl bg-gradient-to-br from-cream-200 to-cream-300   flex items-center justify-center shrink-0">
@@ -278,6 +312,112 @@ export default function CremasPage() {
           </div>
         )}
       </main>
+
+      {/* Edit Modal */}
+      <AnimatePresence>
+        {editingCream && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            onClick={() => setEditingCream(null)}
+          >
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative bg-card border border-border rounded-2xl p-6 w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setEditingCream(null)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              
+              <h2 className="text-xl font-display font-semibold text-foreground mb-4">
+                Editar Sabor
+              </h2>
+              
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  updateMutation.mutate({
+                    id: editingCream.id,
+                    data: {
+                      flavor_name: editFormData.flavor_name,
+                      quantity: editFormData.quantity,
+                      price: editFormData.price,
+                    },
+                  });
+                }}
+                className="space-y-4"
+              >
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
+                    Nombre del sabor
+                  </label>
+                  <input
+                    type="text"
+                    value={editFormData.flavor_name}
+                    onChange={(e) => setEditFormData({ ...editFormData, flavor_name: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl bg-background border border-input focus:outline-none focus:ring-2 focus:ring-peach-500 transition-all"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
+                    Cantidad
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={editFormData.quantity}
+                    onChange={(e) => setEditFormData({ ...editFormData, quantity: Number(e.target.value) })}
+                    className="w-full px-4 py-3 rounded-xl bg-background border border-input focus:outline-none focus:ring-2 focus:ring-peach-500 transition-all"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-muted-foreground mb-2">
+                    Precio (COP)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={editFormData.price}
+                    onChange={(e) => setEditFormData({ ...editFormData, price: Number(e.target.value) })}
+                    className="w-full px-4 py-3 rounded-xl bg-background border border-input focus:outline-none focus:ring-2 focus:ring-peach-500 transition-all"
+                  />
+                </div>
+                
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="submit"
+                    disabled={updateMutation.isPending}
+                    className="flex-1 py-3 rounded-xl bg-peach-500 text-white font-medium hover:bg-peach-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <Check className="w-4 h-4" />
+                    {updateMutation.isPending ? "Guardando..." : "Guardar"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingCream(null)}
+                    className="px-6 py-3 rounded-xl bg-secondary text-secondary-foreground font-medium hover:bg-secondary/80 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

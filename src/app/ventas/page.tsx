@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { creamsApi, salesApi } from "@/lib/api";
-import { ShoppingCart, ArrowLeft, IceCream, Check, TrendingUp, Calendar, Clock } from "lucide-react";
+import { ShoppingCart, ArrowLeft, IceCream, Check, TrendingUp, Calendar, Clock, Trash2 } from "lucide-react";
 import { DarkModeToggle } from "@/components/ui/DarkModeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -49,6 +49,7 @@ export default function VentasPage() {
   const [manualPrice, setManualPrice] = useState<number>(0);
   const [showRegister, setShowRegister] = useState(true);
   const [view, setView] = useState<"register" | "history">("register");
+  const [deletingSale, setDeletingSale] = useState<string | null>(null);
 
   const { data: creams = [] } = useQuery({
     queryKey: ["creams"],
@@ -74,6 +75,19 @@ export default function VentasPage() {
     },
     onError: (error: any) => {
       alert(error.message || "Error al registrar venta");
+    },
+  });
+
+  const deleteSaleMutation = useMutation({
+    mutationFn: salesApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["creams"] });
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      setDeletingSale(null);
+    },
+    onError: (error: any) => {
+      alert(error.message || "Error al eliminar venta");
+      setDeletingSale(null);
     },
   });
 
@@ -495,7 +509,7 @@ export default function VentasPage() {
                             .map((sale) => (
                               <div
                                 key={sale.id}
-                                className="bg-card border border-border rounded-xl p-3 sm:p-4 flex items-center justify-between gap-4"
+                                className="bg-card border border-border rounded-xl p-3 sm:p-4 flex items-center justify-between gap-4 group"
                               >
                                 <div className="flex items-center gap-3 min-w-0">
                                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cream-200 to-cream-300   flex items-center justify-center shrink-0">
@@ -508,11 +522,20 @@ export default function VentasPage() {
                                     </p>
                                   </div>
                                 </div>
-                                <div className="text-right shrink-0">
-                                  <p className="text-lg sm:text-xl font-display font-bold text-peach-600 ">
-                                    ${(sale.total ?? 0).toLocaleString('es-CO')}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground hidden sm:block">total</p>
+                                <div className="flex items-center gap-3">
+                                  <div className="text-right shrink-0">
+                                    <p className="text-lg sm:text-xl font-display font-bold text-peach-600 ">
+                                      ${(sale.total ?? 0).toLocaleString('es-CO')}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground hidden sm:block">total</p>
+                                  </div>
+                                  <button
+                                    onClick={() => setDeletingSale(sale.id)}
+                                    className="w-8 h-8 rounded-lg bg-red-100 /30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-200 :bg-red-900/50"
+                                    aria-label="Eliminar venta"
+                                  >
+                                    <Trash2 className="w-4 h-4 text-red-600" />
+                                  </button>
                                 </div>
                               </div>
                             ))}
@@ -525,6 +548,50 @@ export default function VentasPage() {
           )}
         </AnimatePresence>
       </main>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deletingSale && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            onClick={() => setDeletingSale(null)}
+          >
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative bg-card border border-border rounded-2xl p-6 w-full max-w-sm"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-xl font-display font-semibold text-foreground mb-2">
+                Eliminar Venta
+              </h2>
+              <p className="text-muted-foreground mb-6">
+                ¿Estás seguro de que deseas eliminar esta venta? El inventario se restaurará.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => deleteSaleMutation.mutate(deletingSale)}
+                  disabled={deleteSaleMutation.isPending}
+                  className="flex-1 py-3 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition-colors disabled:opacity-50"
+                >
+                  {deleteSaleMutation.isPending ? "Eliminando..." : "Eliminar"}
+                </button>
+                <button
+                  onClick={() => setDeletingSale(null)}
+                  className="px-6 py-3 rounded-xl bg-secondary text-secondary-foreground font-medium hover:bg-secondary/80 transition-colors"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

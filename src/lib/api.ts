@@ -59,6 +59,12 @@ export interface CreamCreate {
   price?: number;
 }
 
+export interface CreamUpdate {
+  flavor_name?: string;
+  quantity?: number;
+  price?: number;
+}
+
 export interface CreamAddStock {
   amount: number;
 }
@@ -115,6 +121,8 @@ export const creamsApi = {
   getById: (id: string) => authFetchApi<Cream>(`/creams/${id}`),
   create: (data: CreamCreate) =>
     authFetchApi<Cream>("/creams", { method: "POST", body: JSON.stringify(data) }),
+  update: (id: string, data: CreamUpdate) =>
+    authFetchApi<Cream>(`/creams/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   addStock: (id: string, data: CreamAddStock) =>
     authFetchApi<Cream>(`/creams/${id}/add-stock`, { method: "POST", body: JSON.stringify(data) }),
   delete: (id: string) =>
@@ -126,6 +134,8 @@ export const salesApi = {
   getAll: () => authFetchApi<Sale[]>("/creamssales"),
   create: (id: string, data: SaleCreate) =>
     authFetchApi<Sale>(`/creams/${id}/sell`, { method: "POST", body: JSON.stringify(data) }),
+  delete: (id: string) =>
+    authFetchApi<void>(`/creamssales/${id}`, { method: "DELETE" }),
   getByCream: (id: string) => authFetchApi<Sale[]>(`/creams/${id}/sales`),
 };
 
