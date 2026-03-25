@@ -10,6 +10,36 @@ import { ShoppingCart, ArrowLeft, IceCream, Check, TrendingUp, Calendar, Clock }
 import { DarkModeToggle } from "@/components/ui/DarkModeToggle";
 import { useAuth } from "@/contexts/AuthContext";
 
+// Colombia timezone offset: UTC-5
+const COLOMBIA_OFFSET_HOURS = -5;
+
+function getColombiaDate(date: Date | string): Date {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  // Create a new date adjusted to Colombia timezone
+  const utcTime = d.getTime();
+  const colombiaOffsetMs = COLOMBIA_OFFSET_HOURS * 60 * 60 * 1000;
+  return new Date(utcTime + colombiaOffsetMs);
+}
+
+function formatDateColombia(date: Date | string): string {
+  const d = getColombiaDate(date);
+  return d.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatTimeColombia(date: Date | string): string {
+  const d = getColombiaDate(date);
+  return d.toLocaleTimeString("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export default function VentasPage() {
   const { user, isLoading: authLoading } = useAuth();
   const router = useRouter();
@@ -61,7 +91,7 @@ export default function VentasPage() {
 
     saleMutation.mutate({
       id: cream.id,
-      data: { cream_id: cream.id, quantity_sold: quantity },
+      data: { cream_id: cream.id, quantity_sold: quantity, price: effectivePrice },
     });
   };
 
@@ -91,31 +121,24 @@ export default function VentasPage() {
   // Sales stats
   const totalVentas = sales.reduce((acc, s) => acc + s.quantity_sold, 0);
   const ventasHoy = sales.filter((s) => {
-    const hoy = new Date().toDateString();
-    return new Date(s.sold_at).toDateString() === hoy;
+    const hoyColombia = getColombiaDate(new Date()).toDateString();
+    return getColombiaDate(s.sold_at).toDateString() === hoyColombia;
   });
   
   // Daily revenue calculation (handle legacy sales gracefully)
   const ingresosHoy = ventasHoy.reduce((acc, s) => acc + (s.total ?? 0), 0);
   const ingresosTotales = sales.reduce((acc, s) => acc + (s.total ?? 0), 0);
 
-  // Group sales by date
+  // Group sales by date (using Colombia timezone)
   const salesByDate = sales.reduce((acc, sale) => {
-    const date = new Date(sale.sold_at).toDateString();
+    const date = getColombiaDate(sale.sold_at).toDateString();
     if (!acc[date]) acc[date] = [];
     acc[date].push(sale);
     return acc;
   }, {} as Record<string, typeof sales>);
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("es-ES", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return formatDateColombia(dateStr);
   };
 
   return (
@@ -459,7 +482,7 @@ export default function VentasPage() {
                         transition={{ delay: dateIndex * 0.05 }}
                       >
                         <h3 className="text-sm font-medium text-muted-foreground mb-3 capitalize">
-                          {new Date(date).toLocaleDateString("es-ES", {
+                          {getColombiaDate(date).toLocaleDateString("es-ES", {
                             weekday: "long",
                             day: "numeric",
                             month: "long",
@@ -468,7 +491,7 @@ export default function VentasPage() {
                         
                         <div className="space-y-2">
                           {dateSales
-                            .sort((a, b) => new Date(b.sold_at).getTime() - new Date(a.sold_at).getTime())
+                            .sort((a, b) => getColombiaDate(b.sold_at).getTime() - getColombiaDate(a.sold_at).getTime())
                             .map((sale) => (
                               <div
                                 key={sale.id}
@@ -481,10 +504,7 @@ export default function VentasPage() {
                                   <div className="min-w-0">
                                     <p className="font-medium text-foreground truncate">{sale.cream_name}</p>
                                     <p className="text-xs text-muted-foreground">
-                                      {new Date(sale.sold_at).toLocaleTimeString("es-ES", {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })} · ${(sale.price ?? 0).toLocaleString('es-CO')} x {sale.quantity_sold}
+                                      {formatTimeColombia(sale.sold_at)} · ${(sale.price ?? 0).toLocaleString('es-CO')} x {sale.quantity_sold}
                                     </p>
                                   </div>
                                 </div>
